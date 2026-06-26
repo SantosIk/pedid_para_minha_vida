@@ -13,7 +13,7 @@ import {
   Sliders,
   Sparkles,
   ExternalLink,
-  Info
+  Info,
 } from "lucide-react";
 
 interface PhotoSlide {
@@ -26,7 +26,9 @@ interface PhotoSlide {
 export function AndroidApp() {
   const [lisbonTime, setLisbonTime] = useState("");
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [driveUrl, setDriveUrl] = useState("https://drive.google.com/drive/folders/1-HMSW4noiL9s4juikvwbxBMBfJqBkU-u");
+  const [driveUrl, setDriveUrl] = useState(
+    "https://drive.google.com/drive/folders/1-HMSW4noiL9s4juikvwbxBMBfJqBkU-u",
+  );
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncMessage, setSyncMessage] = useState("");
   const [downloadSuccess, setDownloadSuccess] = useState(false);
@@ -37,38 +39,44 @@ export function AndroidApp() {
       id: "1",
       url: "/images/WhatsApp Image 2026-06-26 at 00.38.58.jpeg",
       caption: "Amor & Cumplicidade",
-      description: "O brilho nos olhos que reflete toda a nossa cumplicidade e carinho."
+      description:
+        "O brilho nos olhos que reflete toda a nossa cumplicidade e carinho.",
     },
     {
       id: "2",
       url: "/images/WhatsApp Image 2026-06-26 at 00.38.58 (1).jpeg",
       caption: "Sorrisos Compartilhados",
-      description: "Cada gargalhada ao teu lado é a prova de que fomos feitos um para o outro."
+      description:
+        "Cada gargalhada ao teu lado é a prova de que fomos feitos um para o outro.",
     },
     {
       id: "3",
       url: "/images/WhatsApp Image 2026-06-26 at 00.38.58 (2).jpeg",
       caption: "Chamadas de Vídeo",
-      description: "Horas intermináveis a conversar no ecrã, encurtando distâncias."
+      description:
+        "Horas intermináveis a conversar no ecrã, encurtando distâncias.",
     },
     {
       id: "4",
       url: "/images/WhatsApp Image 2026-06-26 at 00.38.58 (3).jpeg",
       caption: "O Nosso Lar & Família",
-      description: "O aconchego do nosso abraço, cuidando de cada pequeno detalhe."
+      description:
+        "O aconchego do nosso abraço, cuidando de cada pequeno detalhe.",
     },
     {
       id: "5",
       url: "/images/WhatsApp Image 2026-06-26 at 00.38.58 (4).jpeg",
       caption: "Painel de Sonhos",
-      description: "As viagens sonhadas, os planos futuros e a nossa vida idealizada."
+      description:
+        "As viagens sonhadas, os planos futuros e a nossa vida idealizada.",
     },
     {
       id: "6",
       url: "/images/WhatsApp Image 2026-06-26 at 00.38.58 (5).jpeg",
       caption: "Felicidade Pura",
-      description: "Pequenos instantes diários que tornam a nossa história tão perfeita."
-    }
+      description:
+        "Pequenos instantes diários que tornam a nossa história tão perfeita.",
+    },
   ]);
 
   // Live Lisbon Clock logic
@@ -133,22 +141,34 @@ export function AndroidApp() {
 
       const data = await response.json();
 
-      if (response.ok && data.success && data.images && data.images.length > 0) {
+      if (
+        response.ok &&
+        data.success &&
+        data.images &&
+        data.images.length > 0
+      ) {
         // Format the dynamically fetched slides from drive
-        const driveSlides: PhotoSlide[] = data.images.map((img: any, idx: number) => ({
-          id: img.id,
-          url: img.url,
-          caption: `Foto Especial ${idx + 1}`,
-          description: "Sincronizada automaticamente da vossa Google Drive ☁️"
-        }));
+        const driveSlides: PhotoSlide[] = data.images.map(
+          (img: any, idx: number) => ({
+            id: img.id,
+            url: img.url,
+            caption: `Foto Especial ${idx + 1}`,
+            description:
+              "Sincronizada automaticamente da vossa Google Drive ☁️",
+          }),
+        );
 
         setSlides(driveSlides);
         setCurrentSlide(0);
-        setSyncMessage(`Sucesso! Carregadas ${driveSlides.length} fotos em tempo real! 🎉`);
+        setSyncMessage(
+          `Sucesso! Carregadas ${driveSlides.length} fotos em tempo real! 🎉`,
+        );
       } else {
         // If parsing didn't find specific image keys (due to folder settings), fallback to a friendly mockup of synced files
-        setSyncMessage("Pasta sincronizada! As fotos serão ingeridas dinamicamente do vosso Drive.");
-        
+        setSyncMessage(
+          "Pasta sincronizada! As fotos serão ingeridas dinamicamente do vosso Drive.",
+        );
+
         // Let's mock dynamic ingestion with beautifully themed cards containing their Google Drive images if parsing fails
         // but we keep their URLs intact so she knows it connects
         setTimeout(() => {
@@ -157,7 +177,9 @@ export function AndroidApp() {
       }
     } catch (error) {
       console.error(error);
-      setSyncMessage("Sincronizado! Fotos prontas para serem exibidas no carrossel.");
+      setSyncMessage(
+        "Sincronizado! Fotos prontas para serem exibidas no carrossel.",
+      );
       setTimeout(() => {
         setSyncMessage("");
       }, 4000);
@@ -167,49 +189,12 @@ export function AndroidApp() {
   };
 
   // Trigger real app APK download from our Express endpoint
-  const handleDownloadApp = async () => {
-    try {
-      setDownloadSuccess(true);
-      
-      // Fetch the APK bytes directly as a Blob to prevent iframe sandbox truncation/corruption
-      const response = await fetch("/api/download-apk");
-      if (!response.ok) {
-        throw new Error("Falha ao descarregar o arquivo APK do servidor.");
-      }
-      
-      const blob = await response.blob();
-      
-      // Create a local blob URL
-      const blobUrl = window.URL.createObjectURL(blob);
-      
-      const link = document.createElement("a");
-      link.href = blobUrl;
-      link.download = "meubem.apk";
-      document.body.appendChild(link);
-      link.click();
-      
-      // Cleanup
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(blobUrl);
-    } catch (error) {
-      console.error("[APK Download Error]", error);
-      // Fallback to direct navigation link if blob download fails
-      const link = document.createElement("a");
-      link.href = "/api/download-apk";
-      link.download = "meubem.apk";
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } finally {
-      setTimeout(() => {
-        setDownloadSuccess(false);
-      }, 5000);
-    }
+  const handleDownloadApp = () => {
+    window.location.href = "/pedid_para_minha_vida/meubem.apk";
   };
 
   return (
     <div className="w-full max-w-6xl mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center justify-center">
-      
       {/* Left panel: Info & App instructions */}
       <div className="lg:col-span-5 space-y-6 text-left">
         <div className="inline-flex items-center gap-2 px-3 py-1 bg-pink-100 text-pink-600 rounded-full text-xs font-semibold">
@@ -220,33 +205,53 @@ export function AndroidApp() {
           O Nosso Aplicativo Android Oficial
         </h3>
         <p className="text-rose-800/80 text-sm md:text-base">
-          Como prometido, preparei uma aplicação móvel especial para nós! A aplicação tem uma interface limpa, rápida e carrega automaticamente as nossas memórias em tempo real.
+          Como prometido, preparei uma aplicação móvel especial para nós! A
+          aplicação tem uma interface limpa, rápida e carrega automaticamente as
+          nossas memórias em tempo real.
         </p>
 
         <div className="space-y-4 bg-rose-50/50 border border-rose-100 rounded-2xl p-5">
           <h4 className="font-semibold text-rose-900 text-sm flex items-center gap-2">
-            <Info className="w-4 h-4 text-rose-500" /> Funcionalidades Incluídas:
+            <Info className="w-4 h-4 text-rose-500" /> Funcionalidades
+            Incluídas:
           </h4>
           <ul className="space-y-2.5 text-xs text-rose-800/80">
             <li className="flex items-start gap-2">
               <span className="text-rose-500 font-bold">✓</span>
-              <span><strong>Símbolo do Infinito e Alianças:</strong> No topo, exibindo a união eterna de Paulo e Ana Caroline.</span>
+              <span>
+                <strong>Símbolo do Infinito e Alianças:</strong> No topo,
+                exibindo a união eterna de Paulo e Ana Caroline.
+              </span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-rose-500 font-bold">✓</span>
-              <span><strong>Relógio de Lisboa (🇵🇹):</strong> Mantém-te sempre a par da hora atual de Portugal, simbolizando o nosso tempo único.</span>
+              <span>
+                <strong>Relógio de Lisboa (🇵🇹):</strong> Mantém-te sempre a par
+                da hora atual de Portugal, simbolizando o nosso tempo único.
+              </span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-rose-500 font-bold">✓</span>
-              <span><strong>Pasta de Partilha:</strong> Acesso direto com um clique à nossa Google Drive conjunta de fotos.</span>
+              <span>
+                <strong>Pasta de Partilha:</strong> Acesso direto com um clique
+                à nossa Google Drive conjunta de fotos.
+              </span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-rose-500 font-bold">✓</span>
-              <span><strong>Música Oficial:</strong> Reprodutor integrado com a nossa playlist do Spotify para ouvires as nossas músicas enquanto navegas.</span>
+              <span>
+                <strong>Música Oficial:</strong> Reprodutor integrado com a
+                nossa playlist do Spotify para ouvires as nossas músicas
+                enquanto navegas.
+              </span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-rose-500 font-bold">✓</span>
-              <span><strong>Carrossel Google Drive:</strong> As fotos são alimentadas dinamicamente. Qualquer foto adicionada ao vosso Drive atualizará a app de imediato!</span>
+              <span>
+                <strong>Carrossel Google Drive:</strong> As fotos são
+                alimentadas dinamicamente. Qualquer foto adicionada ao vosso
+                Drive atualizará a app de imediato!
+              </span>
             </li>
           </ul>
         </div>
@@ -270,7 +275,9 @@ export function AndroidApp() {
               disabled={isSyncing}
               className="px-3 py-2 bg-rose-500 text-white rounded-xl text-xs font-semibold hover:bg-rose-600 transition flex items-center gap-1.5 disabled:bg-rose-300"
             >
-              <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : ''}`} />
+              <RefreshCw
+                className={`w-3.5 h-3.5 ${isSyncing ? "animate-spin" : ""}`}
+              />
               Sincronizar
             </button>
           </div>
@@ -304,20 +311,32 @@ export function AndroidApp() {
             )}
           </button>
           <p className="text-[10px] text-rose-700/60 mt-1.5 font-mono italic">
-            * Compatível com todos os dispositivos Android. Transfere a configuração oficial.
+            * Compatível com todos os dispositivos Android. Transfere a
+            configuração oficial.
           </p>
 
           {/* Help container explaining how to solve "Problem parsing the package" caused by sandboxed preview downloads */}
           <div className="p-4 bg-amber-50/70 border border-amber-200/60 rounded-2xl space-y-2 text-amber-900">
             <h5 className="font-semibold text-xs flex items-center gap-1.5 text-amber-800">
               <Info className="w-4 h-4 text-amber-600 shrink-0" />
-              Aviso Importante • Erro "Problema ao analisar o pacote" (Parsing Package Error)?
+              Aviso Importante • Erro "Problema ao analisar o pacote" (Parsing
+              Package Error)?
             </h5>
             <p className="text-[11px] leading-relaxed text-amber-800/95">
-              Se estiveres a clicar no botão de download <strong>dentro deste ecrã de simulação / visualização (iframe)</strong>, o teu navegador pode corromper ou cortar o arquivo APK, resultando no erro <em>"Problema ao analisar o pacote"</em> no Android.
+              Se estiveres a clicar no botão de download{" "}
+              <strong>
+                dentro deste ecrã de simulação / visualização (iframe)
+              </strong>
+              , o teu navegador pode corromper ou cortar o arquivo APK,
+              resultando no erro <em>"Problema ao analisar o pacote"</em> no
+              Android.
             </p>
             <p className="text-[11px] leading-relaxed font-medium text-amber-900">
-              👉 <strong>Como resolver:</strong> Abre a aplicação numa <strong>nova aba do navegador</strong> (clicando no botão "Open in New Tab" ou usando o link de partilha diretamente no teu telemóvel) e faz o download a partir daí. Assim, o arquivo será transferido de forma 100% limpa e sem restrições de sandbox!
+              👉 <strong>Como resolver:</strong> Abre a aplicação numa{" "}
+              <strong>nova aba do navegador</strong> (clicando no botão "Open in
+              New Tab" ou usando o link de partilha diretamente no teu
+              telemóvel) e faz o download a partir daí. Assim, o arquivo será
+              transferido de forma 100% limpa e sem restrições de sandbox!
             </p>
           </div>
         </div>
@@ -327,7 +346,6 @@ export function AndroidApp() {
       <div className="lg:col-span-7 flex justify-center">
         {/* Physical phone frame wrapper */}
         <div className="relative w-[340px] h-[680px] bg-stone-900 rounded-[50px] p-3.5 shadow-[0_25px_60px_-15px_rgba(244,63,94,0.3)] border-[8px] border-stone-800 ring-1 ring-white/10 flex flex-col overflow-hidden">
-          
           {/* Speaker ear piece & camera notch */}
           <div className="absolute top-2.5 left-1/2 -translate-x-1/2 w-32 h-6 bg-stone-900 rounded-b-2xl z-50 flex items-center justify-center gap-2">
             <div className="w-12 h-1 bg-stone-800 rounded-full"></div>
@@ -336,7 +354,6 @@ export function AndroidApp() {
 
           {/* Phone Screen Container */}
           <div className="flex-1 rounded-[38px] bg-gradient-to-b from-rose-50 to-pink-100 flex flex-col overflow-hidden relative border border-stone-100">
-            
             {/* Status bar */}
             <div className="px-5 pt-3 pb-1.5 flex justify-between items-center text-rose-900/60 text-[10px] font-semibold font-mono z-40">
               <span className="flex items-center gap-1">
@@ -361,7 +378,7 @@ export function AndroidApp() {
                 </span>
                 <span>Ana Caroline</span>
               </div>
-              
+
               {/* Slogan */}
               <div className="text-[10px] text-rose-600 font-bold flex items-center gap-1 mt-0.5">
                 <Heart className="w-2.5 h-2.5 fill-rose-500 text-rose-500 animate-heartbeat" />
@@ -379,14 +396,20 @@ export function AndroidApp() {
 
               {/* Encontro highlight with countdown */}
               <div className="mt-1.5 text-[9px] font-semibold text-rose-700 flex flex-col items-center gap-1">
-                <div>📅 Encontro: <span className="bg-rose-100/80 px-1.5 py-0.5 rounded-md font-mono text-rose-900">24/09/2026</span></div>
-                <div className="text-[10px] text-rose-mid font-extrabold animate-pulse">⏳ {getCountdownText()}</div>
+                <div>
+                  📅 Encontro:{" "}
+                  <span className="bg-rose-100/80 px-1.5 py-0.5 rounded-md font-mono text-rose-900">
+                    24/09/2026
+                  </span>
+                </div>
+                <div className="text-[10px] text-rose-mid font-extrabold animate-pulse">
+                  ⏳ {getCountdownText()}
+                </div>
               </div>
             </div>
 
             {/* Scrollable phone content screen */}
             <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 no-scrollbar">
-              
               {/* Interactive Smooth Photo Carousel Section */}
               <div className="bg-white rounded-2xl p-3 shadow-sm border border-rose-50 relative overflow-hidden">
                 <div className="text-[10px] text-rose-700 font-bold mb-2 flex items-center justify-between">
@@ -415,7 +438,7 @@ export function AndroidApp() {
                       />
                       {/* Gradient overlay for text readability */}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/10 to-transparent"></div>
-                      
+
                       <div className="absolute bottom-0 left-0 right-0 p-2.5 text-white text-left">
                         <p className="font-semibold text-[11px] text-rose-200 tracking-wide flex items-center gap-1">
                           <Sparkles className="w-3 h-3 text-amber-300" />
@@ -461,8 +484,12 @@ export function AndroidApp() {
                       <FolderHeart className="w-4 h-4 text-white fill-white" />
                     </div>
                     <div>
-                      <h5 className="font-bold text-[10px] tracking-wide uppercase">Pasta Drive de Fotos</h5>
-                      <p className="text-[9px] text-amber-100 font-sans">Aceder a todas as nossas fotos reais</p>
+                      <h5 className="font-bold text-[10px] tracking-wide uppercase">
+                        Pasta Drive de Fotos
+                      </h5>
+                      <p className="text-[9px] text-amber-100 font-sans">
+                        Aceder a todas as nossas fotos reais
+                      </p>
                     </div>
                   </div>
                   <ExternalLink className="w-3.5 h-3.5 text-amber-200" />
@@ -474,7 +501,9 @@ export function AndroidApp() {
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-1.5">
                     <Music className="w-3.5 h-3.5 text-emerald-500 fill-emerald-500" />
-                    <span className="text-[9px] font-bold text-white uppercase tracking-wider">A Nossa Playlist</span>
+                    <span className="text-[9px] font-bold text-white uppercase tracking-wider">
+                      A Nossa Playlist
+                    </span>
                   </div>
                   <a
                     href="https://open.spotify.com/playlist/60JNgMiy6KEcUcnmHCDP7x?si=f50b37dff62444c6&pt=7816c5dd460abc300332adb770e42f58"
@@ -497,18 +526,15 @@ export function AndroidApp() {
                   className="rounded-lg shadow-inner bg-stone-900 border border-stone-800"
                 ></iframe>
               </div>
-
             </div>
 
             {/* Bottom virtual home gesture bar */}
             <div className="h-6 flex items-center justify-center z-40">
               <div className="w-24 h-1 bg-rose-900/30 rounded-full"></div>
             </div>
-
           </div>
         </div>
       </div>
-
     </div>
   );
 }
