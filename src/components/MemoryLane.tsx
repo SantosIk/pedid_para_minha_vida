@@ -1,11 +1,160 @@
-import { motion } from "motion/react";
-import { MessageCircle, Heart, Phone, Users, Image as ImageIcon } from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
+import { MessageCircle, Heart, Phone, Users, Image as ImageIcon, ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
 
 // Beautiful AI-generated high-quality images as fallbacks
 const videoCallImg = "/src/assets/images/videocall_1782434354118.jpg";
 const ourFamilyImg = "/src/assets/images/our_family_1782434372416.jpg";
 const dreamBoardImg = "/src/assets/images/dream_board_1782434386455.jpg";
+
+// Real uploaded photos list for the beautiful custom carousel
+const CAROUSEL_SLIDES = [
+  {
+    src: "/images/WhatsApp Image 2026-06-26 at 00.38.58.jpeg",
+    title: "Amor & Cumplicidade",
+    subtitle: "O Começo de Tudo",
+    quote: "O brilho nos olhos que reflete toda a nossa cumplicidade, carinho e promessa de futuro."
+  },
+  {
+    src: "/images/WhatsApp Image 2026-06-26 at 00.38.58 (1).jpeg",
+    title: "Sorrisos Compartilhados",
+    subtitle: "Porto Seguro",
+    quote: "Cada gargalhada ao teu lado é a prova de que fomos feitos um para o outro."
+  },
+  {
+    src: "/images/WhatsApp Image 2026-06-26 at 00.38.58 (2).jpeg",
+    title: "Chamadas de Vídeo",
+    subtitle: "Ecrãs de Cumplicidade",
+    quote: "Horas intermináveis a conversar no ecrã, encurtando distâncias e partilhando sonhos."
+  },
+  {
+    src: "/images/WhatsApp Image 2026-06-26 at 00.38.58 (3).jpeg",
+    title: "O Nosso Lar & Família",
+    subtitle: "Presente e Futuro",
+    quote: "O aconchego do nosso abraço, cuidando de cada pequeno detalhe com amor."
+  },
+  {
+    src: "/images/WhatsApp Image 2026-06-26 at 00.38.58 (4).jpeg",
+    title: "Painel de Sonhos",
+    subtitle: "Aventuras Coletivas",
+    quote: "Cada detalhe dos nossos planos futuros, as viagens sonhadas e a vida a construir."
+  },
+  {
+    src: "/images/WhatsApp Image 2026-06-26 at 00.38.58 (5).jpeg",
+    title: "Momentos Únicos",
+    subtitle: "Felicidade Pura",
+    quote: "Pequenos instantes de cumplicidade diária que tornam a nossa história tão perfeita."
+  }
+];
+
+function ImageCarousel() {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const handlePrev = () => {
+    setCurrentIndex((prev) => (prev === 0 ? CAROUSEL_SLIDES.length - 1 : prev - 1));
+  };
+
+  const handleNext = () => {
+    setCurrentIndex((prev) => (prev === CAROUSEL_SLIDES.length - 1 ? 0 : prev + 1));
+  };
+
+  return (
+    <div className="bg-white/80 rounded-3xl p-6 md:p-8 shadow-xl border border-rose-100 flex flex-col items-center">
+      <div className="w-full flex items-center justify-between mb-6">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-rose-100 flex items-center justify-center text-rose-600">
+            <ImageIcon className="w-5 h-5 text-rose-500" />
+          </div>
+          <div>
+            <h3 className="font-serif text-lg md:text-xl font-bold text-rose-950">
+              Galeria do Nosso Amor
+            </h3>
+            <p className="text-xs text-rose-700/60 font-mono">
+              Fotos Reais • Desliza para Recordar
+            </p>
+          </div>
+        </div>
+        <div className="flex gap-2">
+          <button
+            onClick={handlePrev}
+            className="w-9 h-9 rounded-full bg-rose-50 hover:bg-rose-100 border border-rose-100 flex items-center justify-center text-rose-600 transition-colors cursor-pointer"
+            aria-label="Foto anterior"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+          <button
+            onClick={handleNext}
+            className="w-9 h-9 rounded-full bg-rose-50 hover:bg-rose-100 border border-rose-100 flex items-center justify-center text-rose-600 transition-colors cursor-pointer"
+            aria-label="Próxima foto"
+          >
+            <ChevronRight className="w-5 h-5" />
+          </button>
+        </div>
+      </div>
+
+      <div className="relative w-full max-w-3xl aspect-[16/10] md:aspect-[16/9] rounded-2xl overflow-hidden shadow-inner border border-rose-100/50 bg-stone-50">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentIndex}
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 1.02 }}
+            transition={{ duration: 0.4, ease: "easeInOut" }}
+            className="absolute inset-0 w-full h-full"
+          >
+            <img
+              src={CAROUSEL_SLIDES[currentIndex].src}
+              alt={CAROUSEL_SLIDES[currentIndex].title}
+              className="w-full h-full object-cover select-none"
+            />
+            {/* Ambient vignette gradient */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent pointer-events-none"></div>
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Text Details Overlay on bottom of Image */}
+        <div className="absolute bottom-0 left-0 right-0 p-6 text-white z-10 select-none bg-gradient-to-t from-black/60 to-transparent pt-12">
+          <motion.div
+            key={`text-${currentIndex}`}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
+            className="space-y-1 md:space-y-1.5"
+          >
+            <span className="text-[10px] md:text-xs font-mono font-bold tracking-widest text-rose-300 uppercase block">
+              {CAROUSEL_SLIDES[currentIndex].subtitle}
+            </span>
+            <h4 className="font-serif text-base md:text-2xl font-bold tracking-tight text-white">
+              {CAROUSEL_SLIDES[currentIndex].title}
+            </h4>
+            <p className="text-xs md:text-sm text-stone-200 font-light leading-relaxed max-w-2xl">
+              "{CAROUSEL_SLIDES[currentIndex].quote}"
+            </p>
+          </motion.div>
+        </div>
+      </div>
+
+      {/* Pagination indicators and slide progress count */}
+      <div className="flex flex-col items-center gap-3 mt-6 w-full">
+        <div className="flex justify-center gap-2">
+          {CAROUSEL_SLIDES.map((_, idx) => (
+            <button
+              key={idx}
+              onClick={() => setCurrentIndex(idx)}
+              className={`h-2.5 rounded-full transition-all duration-300 ${
+                idx === currentIndex ? "w-8 bg-rose-500" : "w-2.5 bg-rose-200 hover:bg-rose-300"
+              }`}
+              aria-label={`Ir para foto ${idx + 1}`}
+            />
+          ))}
+        </div>
+        <span className="text-[11px] font-mono font-medium text-rose-700/60">
+          Foto {currentIndex + 1} de {CAROUSEL_SLIDES.length}
+        </span>
+      </div>
+    </div>
+  );
+}
 
 // Dynamic Fallback Image Component to prevent broken links and load high-quality placeholders if local assets aren't present
 function FallbackImage({
@@ -196,96 +345,13 @@ export function MemoryLane() {
         </motion.div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {/* Memory Card 3: The Video Call Mockup */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="bg-white/80 rounded-3xl p-6 shadow-xl border border-rose-100 md:col-span-1 flex flex-col justify-between"
-        >
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-8 h-8 rounded-full bg-rose-100 flex items-center justify-center text-rose-600">
-              <Phone className="w-4 h-4 fill-rose-500 text-rose-500" />
-            </div>
-            <div>
-              <h4 className="font-semibold text-rose-950 text-sm">Chamadas de Vídeo</h4>
-              <p className="text-[10px] text-rose-700/60 font-mono">Ecrãs de Cumplicidade</p>
-            </div>
-          </div>
-
-          {/* Real WhatsApp image */}
-          <div className="aspect-[4/3] rounded-2xl overflow-hidden border border-rose-100 shadow-md bg-stone-50">
-            <img
-              src="/images/WhatsApp Image 2026-06-26 at 00.38.58 (2).jpeg"
-            />
-          </div>
-          <p className="text-xs text-rose-800/70 mt-3 text-center italic">
-            "Horas passadas em frente ao ecrã, sorrindo e partilhando sonhos..."
-          </p>
-        </motion.div>
-
-        {/* Memory Card 4: Family Portrait */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="bg-white/80 rounded-3xl p-6 shadow-xl border border-rose-100 md:col-span-1 flex flex-col justify-between"
-        >
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-8 h-8 rounded-full bg-rose-100 flex items-center justify-center text-rose-600">
-              <Users className="w-4 h-4 text-rose-500" />
-            </div>
-            <div>
-              <h4 className="font-semibold text-rose-950 text-sm">O Nosso Lar & Família</h4>
-              <p className="text-[10px] text-rose-700/60 font-mono">Presente e Futuro</p>
-            </div>
-          </div>
-
-          {/* Real WhatsApp image */}
-          <div className="aspect-[4/3] rounded-2xl overflow-hidden border border-rose-100 shadow-md bg-stone-50">
-            <img
-              src="/images/WhatsApp Image 2026-06-26 at 00.38.58 (3).jpeg"
-              alt="O Nosso Lar & Família"
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <p className="text-xs text-rose-800/70 mt-3 text-center italic">
-            "Saber que somos um porto seguro uns para os outros."
-          </p>
-        </motion.div>
-
-        {/* Memory Card 5: Dreams Mural Collage */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="bg-white/80 rounded-3xl p-6 shadow-xl border border-rose-100 md:col-span-1 flex flex-col justify-between"
-        >
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-8 h-8 rounded-full bg-rose-100 flex items-center justify-center text-rose-600">
-              <ImageIcon className="w-4 h-4 text-rose-500" />
-            </div>
-            <div>
-              <h4 className="font-semibold text-rose-950 text-sm">Painel de Sonhos</h4>
-              <p className="text-[10px] text-rose-700/60 font-mono">Aventuras Coletivas</p>
-            </div>
-          </div>
-
-          {/* Real WhatsApp image */}
-          <div className="aspect-[4/3] rounded-2xl overflow-hidden border border-rose-100 shadow-md bg-stone-50">
-            <img
-              src="/images/WhatsApp Image 2026-06-26 at 00.38.58 (4).jpeg"
-              
-              alt="Painel de Sonhos"
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <p className="text-xs text-rose-800/70 mt-3 text-center italic">
-            "Cada pequeno detalhe dos nossos gostos cruzados e planos futuros."
-          </p>
-        </motion.div>
-      </div>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+      >
+        <ImageCarousel />
+      </motion.div>
     </div>
   );
 }

@@ -122,6 +122,9 @@ async function startServer() {
     }
   });
 
+  // Serve local uploaded images statically on /images for absolute client-side references
+  app.use("/images", express.static(path.join(process.cwd(), "src/assets/images")));
+
   // API Route to download the real Android APK file (from our saved app-release.apk)
   app.get("/api/download-apk", (req, res) => {
     const apkPath = path.join(process.cwd(), "app-release.apk");
