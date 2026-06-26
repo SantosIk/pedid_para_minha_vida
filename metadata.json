@@ -1,0 +1,6 @@
+{
+  "name": "Pedido de Namoro",
+  "description": "Uma página web romântica e personalizada para pedir Ana Caroline da Silva Lira em namoro, com um simulador interativo do aplicativo móvel 'meu bem❣️'.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
