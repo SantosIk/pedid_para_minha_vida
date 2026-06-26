@@ -125,9 +125,12 @@ async function startServer() {
   // Serve local uploaded images statically on /images for absolute client-side references
   app.use("/images", express.static(path.join(process.cwd(), "src/assets/images")));
 
-  // API Route to download the real Android APK file (from our saved app-release.apk)
+  // API Route to download the real Android APK file (prioritizes src/assets/app/meu_bem.apk)
   app.get("/api/download-apk", (req, res) => {
-    const apkPath = path.join(process.cwd(), "app-release.apk");
+    let apkPath = path.join(process.cwd(), "src/assets/app/meu_bem.apk");
+    if (!fs.existsSync(apkPath)) {
+      apkPath = path.join(process.cwd(), "app-release.apk");
+    }
     console.log(`[APK Download] Serving APK from: ${apkPath}`);
     if (fs.existsSync(apkPath)) {
       const stats = fs.statSync(apkPath);
@@ -143,7 +146,7 @@ async function startServer() {
       const stream = fs.createReadStream(apkPath);
       stream.pipe(res);
     } else {
-      console.warn("[APK Download] app-release.apk not found at:", apkPath);
+      console.warn("[APK Download] APK not found at:", apkPath);
       res.status(404).json({ success: false, error: "Arquivo APK não encontrado no servidor." });
     }
   });
