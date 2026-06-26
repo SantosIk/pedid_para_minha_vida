@@ -31,31 +31,43 @@ export function AndroidApp() {
   const [syncMessage, setSyncMessage] = useState("");
   const [downloadSuccess, setDownloadSuccess] = useState(false);
 
-  // Default romantic memory slides representing their lovely moments
+  // Default romantic memory slides representing their lovely moments with real uploaded photos
   const [slides, setSlides] = useState<PhotoSlide[]>([
     {
       id: "1",
-      url: "",
-      caption: "Amor Infinito",
-      description: "Nós os dois e as estrelas, caminhando lado a lado."
+      url: "/images/WhatsApp Image 2026-06-26 at 00.38.58.jpeg",
+      caption: "Amor & Cumplicidade",
+      description: "O brilho nos olhos que reflete toda a nossa cumplicidade e carinho."
     },
     {
       id: "2",
-      url: "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?q=80&w=1000&auto=format&fit=crop",
-      caption: "O Nosso Dia",
-      description: "Planos que se tornam realidade, dia após dia."
+      url: "/images/WhatsApp Image 2026-06-26 at 00.38.58 (1).jpeg",
+      caption: "Sorrisos Compartilhados",
+      description: "Cada gargalhada ao teu lado é a prova de que fomos feitos um para o outro."
     },
     {
       id: "3",
-      url: "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?q=80&w=1000&auto=format&fit=crop",
-      caption: "Família e Carinho",
-      description: "O calor de um abraço que preenche o peito."
+      url: "/images/WhatsApp Image 2026-06-26 at 00.38.58 (2).jpeg",
+      caption: "Chamadas de Vídeo",
+      description: "Horas intermináveis a conversar no ecrã, encurtando distâncias."
     },
     {
       id: "4",
-      url: "https://images.unsplash.com/photo-1490730141103-6cac27aaab94?q=80&w=1000&auto=format&fit=crop",
-      caption: "Mural de Sonhos",
-      description: "As pequenas viagens que queremos fazer e o futuro que aguardamos."
+      url: "/images/WhatsApp Image 2026-06-26 at 00.38.58 (3).jpeg",
+      caption: "O Nosso Lar & Família",
+      description: "O aconchego do nosso abraço, cuidando de cada pequeno detalhe."
+    },
+    {
+      id: "5",
+      url: "/images/WhatsApp Image 2026-06-26 at 00.38.58 (4).jpeg",
+      caption: "Painel de Sonhos",
+      description: "As viagens sonhadas, os planos futuros e a nossa vida idealizada."
+    },
+    {
+      id: "6",
+      url: "/images/WhatsApp Image 2026-06-26 at 00.38.58 (5).jpeg",
+      caption: "Felicidade Pura",
+      description: "Pequenos instantes diários que tornam a nossa história tão perfeita."
     }
   ]);
 
@@ -155,20 +167,44 @@ export function AndroidApp() {
   };
 
   // Trigger real app APK download from our Express endpoint
-  const handleDownloadApp = () => {
-    setDownloadSuccess(true);
-    
-    // Direct link to our real APK served by the Express backend
-    const link = document.createElement("a");
-    link.href = "/api/download-apk";
-    link.download = "meubem.apk";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    setTimeout(() => {
-      setDownloadSuccess(false);
-    }, 5000);
+  const handleDownloadApp = async () => {
+    try {
+      setDownloadSuccess(true);
+      
+      // Fetch the APK bytes directly as a Blob to prevent iframe sandbox truncation/corruption
+      const response = await fetch("/api/download-apk");
+      if (!response.ok) {
+        throw new Error("Falha ao descarregar o arquivo APK do servidor.");
+      }
+      
+      const blob = await response.blob();
+      
+      // Create a local blob URL
+      const blobUrl = window.URL.createObjectURL(blob);
+      
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = "meubem.apk";
+      document.body.appendChild(link);
+      link.click();
+      
+      // Cleanup
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error("[APK Download Error]", error);
+      // Fallback to direct navigation link if blob download fails
+      const link = document.createElement("a");
+      link.href = "/api/download-apk";
+      link.download = "meubem.apk";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } finally {
+      setTimeout(() => {
+        setDownloadSuccess(false);
+      }, 5000);
+    }
   };
 
   return (
@@ -250,7 +286,7 @@ export function AndroidApp() {
         </div>
 
         {/* Download Android App Button */}
-        <div className="pt-2">
+        <div className="pt-2 space-y-4">
           <button
             onClick={handleDownloadApp}
             className="w-full md:w-auto px-6 py-3.5 bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-600 hover:to-rose-700 text-white font-semibold rounded-2xl shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all flex items-center justify-center gap-2"
@@ -258,7 +294,7 @@ export function AndroidApp() {
             {downloadSuccess ? (
               <>
                 <CheckCircle className="w-5 h-5" />
-                Descarregado! Lê o Ficheiro TXT
+                Download Concluído!
               </>
             ) : (
               <>
@@ -270,6 +306,20 @@ export function AndroidApp() {
           <p className="text-[10px] text-rose-700/60 mt-1.5 font-mono italic">
             * Compatível com todos os dispositivos Android. Transfere a configuração oficial.
           </p>
+
+          {/* Help container explaining how to solve "Problem parsing the package" caused by sandboxed preview downloads */}
+          <div className="p-4 bg-amber-50/70 border border-amber-200/60 rounded-2xl space-y-2 text-amber-900">
+            <h5 className="font-semibold text-xs flex items-center gap-1.5 text-amber-800">
+              <Info className="w-4 h-4 text-amber-600 shrink-0" />
+              Aviso Importante • Erro "Problema ao analisar o pacote" (Parsing Package Error)?
+            </h5>
+            <p className="text-[11px] leading-relaxed text-amber-800/95">
+              Se estiveres a clicar no botão de download <strong>dentro deste ecrã de simulação / visualização (iframe)</strong>, o teu navegador pode corromper ou cortar o arquivo APK, resultando no erro <em>"Problema ao analisar o pacote"</em> no Android.
+            </p>
+            <p className="text-[11px] leading-relaxed font-medium text-amber-900">
+              👉 <strong>Como resolver:</strong> Abre a aplicação numa <strong>nova aba do navegador</strong> (clicando no botão "Open in New Tab" ou usando o link de partilha diretamente no teu telemóvel) e faz o download a partir daí. Assim, o arquivo será transferido de forma 100% limpa e sem restrições de sandbox!
+            </p>
+          </div>
         </div>
       </div>
 
@@ -317,6 +367,9 @@ export function AndroidApp() {
                 <Heart className="w-2.5 h-2.5 fill-rose-500 text-rose-500 animate-heartbeat" />
                 meu bem❣️
               </div>
+              <div className="text-[9px] text-rose-500 font-mono tracking-tight mt-0.5">
+                since 12 november 2025
+              </div>
 
               {/* Live Lisbon Clock + PT Flag */}
               <div className="mt-2 flex items-center justify-center gap-1 px-2.5 py-0.5 bg-rose-50 rounded-full text-[9px] font-mono text-rose-800 border border-rose-100 shadow-sm">
@@ -324,9 +377,9 @@ export function AndroidApp() {
                 <span className="text-xs scale-110">🇵🇹</span>
               </div>
 
-              {/* Reencontro highlight with countdown */}
+              {/* Encontro highlight with countdown */}
               <div className="mt-1.5 text-[9px] font-semibold text-rose-700 flex flex-col items-center gap-1">
-                <div>📅 Reencontro: <span className="bg-rose-100/80 px-1.5 py-0.5 rounded-md font-mono text-rose-900">24/09/2026</span></div>
+                <div>📅 Encontro: <span className="bg-rose-100/80 px-1.5 py-0.5 rounded-md font-mono text-rose-900">24/09/2026</span></div>
                 <div className="text-[10px] text-rose-mid font-extrabold animate-pulse">⏳ {getCountdownText()}</div>
               </div>
             </div>

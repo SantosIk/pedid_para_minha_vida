@@ -130,9 +130,18 @@ async function startServer() {
     const apkPath = path.join(process.cwd(), "app-release.apk");
     console.log(`[APK Download] Serving APK from: ${apkPath}`);
     if (fs.existsSync(apkPath)) {
-      res.setHeader("Content-Disposition", "attachment; filename=meubem.apk");
-      res.setHeader("Content-Type", "application/vnd.android.package-archive");
-      res.sendFile(apkPath);
+      const stats = fs.statSync(apkPath);
+      res.writeHead(200, {
+        "Content-Type": "application/vnd.android.package-archive",
+        "Content-Disposition": "attachment; filename=meubem.apk",
+        "Content-Length": stats.size,
+        "Content-Transfer-Encoding": "binary",
+        "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+        "Pragma": "no-cache",
+        "Expires": "0",
+      });
+      const stream = fs.createReadStream(apkPath);
+      stream.pipe(res);
     } else {
       console.warn("[APK Download] app-release.apk not found at:", apkPath);
       res.status(404).json({ success: false, error: "Arquivo APK não encontrado no servidor." });
