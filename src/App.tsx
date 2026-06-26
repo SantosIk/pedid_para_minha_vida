@@ -54,35 +54,10 @@ export default function App() {
     setShowNoPopup(true);
   };
 
-  // If she confirms "Yes, I want to lose him" on the warning pop-up, send the email
-  const handleConfirmNo = async () => {
+  // If she confirms "Yes, I want to lose him" on the warning pop-up, show sad emojis screen
+  const handleConfirmNo = () => {
     setShowNoPopup(false);
     setProposalStatus("declined");
-    setEmailSending(true);
-
-    try {
-      const response = await fetch("/api/send-email", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          to: "carolana.lira.s@gmail.com",
-          subject: "Despedida... Foi bom enquanto durou 💔",
-          text: "Foi bom enquanto durou, mas agora eu irei virar monge e ir para o tibete ou possivelmente iria engolir uma pílula em ibiza. Adeus!",
-        }),
-      });
-
-      const data = await response.json();
-      if (response.ok && data.success) {
-        setEmailStatus("success");
-      } else {
-        setEmailStatus("error");
-      }
-    } catch (err) {
-      console.error(err);
-      setEmailStatus("error");
-    } finally {
-      setEmailSending(false);
-    }
   };
 
   return (
@@ -247,62 +222,29 @@ export default function App() {
                 </div>
 
                 <div className="mt-6 space-y-6">
-                  <h2 className="font-serif text-3xl font-extrabold text-white">
-                    O Fim de uma História... 💔
+                  <h2 className="font-serif text-3xl font-extrabold text-white text-glow-rose">
+                    Oh... Isso partiu-me o coração... 💔😢🥺😭
                   </h2>
 
-                  {emailSending && (
-                    <div className="py-8 space-y-4">
-                      <div className="w-12 h-12 border-4 border-rose-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
-                      <p className="text-rose-light text-sm font-mono animate-pulse">
-                        A enviar email de despedida para <strong>carolana.lira.s@gmail.com</strong>... ✈️
-                      </p>
-                    </div>
-                  )}
+                  <p className="text-rose-light text-lg leading-relaxed font-sans">
+                    Fiquei muito triste com a tua resposta... 🥺😭😭💔 O meu coração ficou em pedacinhos. 
+                    Dizer "Não" ao nosso amor é como ver o sol deixar de brilhar. 😢🖤
+                  </p>
 
-                  {!emailSending && emailStatus === "success" && (
-                    <div className="space-y-6">
-                      <div className="p-5 bg-rose-dark/60 border border-rose-light/20 rounded-2xl text-left font-mono text-xs text-rose-light">
-                        <span className="font-bold text-rose-primary block mb-1">E-MAIL ENVIADO COM SUCESSO:</span>
-                        <p><strong>Destinatário:</strong> carolana.lira.s@gmail.com</p>
-                        <p className="mt-2 italic">"Foi bom enquanto durou mas agora eu iria virar monge e ir para o tibete ou possivelmente iria engolir uma pílula em ibiza."</p>
-                      </div>
-                      
-                      <p className="text-rose-light text-lg leading-relaxed font-sans">
-                        Agora estou a preparar as minhas malas para o <strong className="text-gold">Tibete</strong>... 🧘‍♂️ ou apanhar o primeiro voo para <strong className="text-rose-primary">Ibiza</strong> 💊. Adeus, meu bem!
-                      </p>
+                  <p className="text-rose-light/80 text-sm leading-relaxed italic">
+                    "Se mudares de ideias, o meu amor por ti continuará aqui, forte e paciente, à espera do teu sim..." 🌹✨
+                  </p>
 
-                      <button
-                        onClick={() => {
-                          setProposalStatus("pending");
-                          setEmailStatus("none");
-                        }}
-                        className="px-6 py-2.5 bg-rose-primary hover:bg-rose-mid text-white text-xs font-semibold rounded-full border border-rose-light/10 transition-all cursor-pointer"
-                      >
-                        Recomeçar a História
-                      </button>
-                    </div>
-                  )}
-
-                  {!emailSending && emailStatus === "error" && (
-                    <div className="space-y-4">
-                      <p className="text-rose-primary text-sm">
-                        O e-mail não pôde ser enviado via SMTP, mas a sua mensagem de despedida foi logada no console do servidor.
-                      </p>
-                      <p className="text-rose-light">
-                        A arrumar as malas para o Tibete de qualquer das formas... 🎒🧘‍♂️
-                      </p>
-                      <button
-                        onClick={() => {
-                          setProposalStatus("pending");
-                          setEmailStatus("none");
-                        }}
-                        className="px-6 py-2.5 bg-rose-primary text-white text-xs font-semibold rounded-full hover:bg-rose-mid transition-all cursor-pointer"
-                      >
-                        Voltar Atrás e Aceitar o Amor
-                      </button>
-                    </div>
-                  )}
+                  <div className="pt-4">
+                    <button
+                      onClick={() => {
+                        setProposalStatus("pending");
+                      }}
+                      className="px-8 py-3.5 bg-gradient-to-r from-rose-primary to-rose-mid hover:from-rose-mid hover:to-rose-dark text-white font-bold rounded-full shadow-lg transition-all hover:scale-[1.02] cursor-pointer"
+                    >
+                      Voltar Atrás e Aceitar o Nosso Amor! ❤️✨
+                    </button>
+                  </div>
                 </div>
               </motion.div>
             )}
@@ -343,7 +285,7 @@ export default function App() {
               </h3>
               
               <p className="text-rose-light/80 text-sm mt-3 leading-relaxed font-sans">
-                Esta escolha é definitiva e enviará uma notificação formal de despedida para <strong className="text-rose-primary">carolana.lira.s@gmail.com</strong>. Pensa bem, gatinha! 🥺
+                Esta escolha vai partir o meu coração em mil pedacinhos... Pensa bem, gatinha! 🥺💔
               </p>
 
               <div className="flex flex-col gap-3 mt-6">

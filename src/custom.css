@@ -1,0 +1,22 @@
+/* Ficheiro CSS customizado para efeitos visuais adicionais */
+
+.text-glow-rose {
+  text-shadow: 0 0 10px rgba(255, 77, 109, 0.6), 0 0 20px rgba(255, 77, 109, 0.4);
+}
+
+.text-glow-gold {
+  text-shadow: 0 0 12px rgba(212, 175, 55, 0.8), 0 0 24px rgba(212, 175, 55, 0.4);
+}
+
+.custom-card-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.custom-card-hover:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 20px 40px rgba(255, 77, 109, 0.15);
+}
+
+/* Transições suaves para os botões e carrossel */
+.smooth-transition {
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
