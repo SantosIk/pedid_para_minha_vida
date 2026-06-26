@@ -190,7 +190,7 @@ export function AndroidApp() {
 
   // Trigger real app APK download from our Express endpoint
   const handleDownloadApp = () => {
-    window.location.href = "/pedid_para_minha_vida/meubem.apk";
+    window.location.href = "/pedid_para_minha_vida/meu_bem.apk";
   };
   return (
     <div className="w-full max-w-6xl mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center justify-center">
